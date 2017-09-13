@@ -9,7 +9,7 @@ function parseLimiter(value, name) {
     case 'number':
       return () => value;
     case 'object':
-      return name => value[name] || Number.MAX_VALUE;
+      return name => value[name] || value['_'] || Number.MAX_VALUE;
     case 'function':
       return value;
     default:
@@ -84,7 +84,6 @@ class SizeLimiterPlugin {
         .filter(({ size, maxSize }) => size > maxSize);
 
       const invalidChunks = compilation.chunks
-        .filter(chunk => !chunk.isInitial())
         .map(chunk => ({
           chunk,
           size: getChunkSize(chunk),

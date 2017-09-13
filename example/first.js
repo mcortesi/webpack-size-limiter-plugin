@@ -1,3 +1,5 @@
+require('./shared');
+
 class Pepe {
   constructor() {}
 

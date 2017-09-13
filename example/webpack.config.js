@@ -5,8 +5,8 @@ const SizeLimiterPlugin = require('..');
 module.exports = {
   context: __dirname,
   entry: {
-    first: './main.js',
-    second: './main.js'
+    first: './first.js',
+    second: './second.js'
   },
   output: {
     filename: '[name]-[hash].js',
@@ -37,16 +37,25 @@ module.exports = {
   },
   devtool: 'inline-source-map',
   plugins: [
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'public-commons'
+    }),
     new SizeLimiterPlugin({
       onlyWarn: true,
       entries: {
         first: 10000,
         second: 19.2 * 1000
       },
-      chunks: chunk => {
-        return 10;
+      chunks: {
+        first: 10000,
+        second: 1000,
+        'public-commons': 20000,
+        _: 10
       }
-    }),
-    new webpack.NoEmitOnErrorsPlugin()
+      // chunks: chunk => {
+      //   return 10;
+      // }
+    })
+    // new webpack.NoEmitOnErrorsPlugin()
   ]
 };
