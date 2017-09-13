@@ -1,5 +1,7 @@
 const { formatSize } = require('webpack/lib/SizeFormatHelpers');
 
+const notSourceMap = fileName => !fileName.endsWith('.map');
+
 function parseLimiter(value, name) {
   if (value == null) {
     return () => Number.MAX_VALUE;
@@ -38,7 +40,9 @@ class SizeLimitWarning extends Error {
       .join('\n');
     const chunksMsg = invalidChunksInfo
       .map(({ chunk, size, maxSize }) => {
-        const strId = chunk.name ? chunk.name : chunk.files;
+        const strId = chunk.name
+          ? chunk.name
+          : chunk.files.filter(notSourceMap);
         return `${strId} (${formatSize(size)}): when maxSize is ${formatSize(
           maxSize
         )}`;
@@ -71,6 +75,7 @@ class SizeLimiterPlugin {
 
       const getChunkSize = chunk =>
         chunk.files
+          .filter(notSourceMap)
           .map(assetName => compilation.assets[assetName].size())
           .reduce((acc, size) => acc + size, 0);
 
